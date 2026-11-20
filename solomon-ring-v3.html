@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>خاتم سليمان | Solomon's Ring</title>
+  <style>
+    :root {
+      --bg: #0b101b;
+      --surface: #121a2b;
+      --card: #192338;
+      --card-2: #222f4a;
+      --gold: #e6b84c;
+      --gold-bright: #f9de7d;
+      --gold-deep: #b3831e;
+      --emerald: #2dd4bf;
+      --sky: #38bdf8;
+      --purple: #c084fc;
+      --amber: #fbbf24;
+      --coral: #fb923c;
+      --text: #f8f4ea;
+      --muted: #b6c0d4;
+      --border: rgba(230, 184, 76, 0.34);
+      --radius: 22px;
+      --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    body.light {
+      --bg: #faf5ea;
+      --surface: #fffdf7;
+      --card: #f3ead7;
+      --card-2: #eadec5;
+      --gold: #a56f0c;
+      --gold-bright: #c58812;
+      --gold-deep: #784f05;
+      --emerald: #0d9488;
+      --sky: #0284c7;
+      --purple: #7c3aed;
+      --amber: #d97706;
+      --coral: #ea580c;
+      --text: #1a1f2c;
+      --muted: #515b70;
+      --border: rgba(165, 111, 12, 0.28);
+      --shadow: 0 8px 22px rgba(90, 62, 10, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Cairo", "Tajawal", "Segoe UI", Tahoma, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 92px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    /* Golden screen flash when "ذهب" is spoken */
+    #gold-flash-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      background: radial-gradient(circle at center, rgba(253, 224, 71, 0.78), rgba(230, 184, 76, 0.45), transparent 72%);
+      transition: opacity 0.2s ease;
+    }
+    #gold-flash-overlay.active {
+      opacity: 1;
+      animation: goldFlashAnim 0.85s ease-out forwards;
+    }
+    @keyframes goldFlashAnim {
+      0% { opacity: 0.92; }
+      100% { opacity: 0; }
+    }
+
+    /* Gentle shake when "نار" is spoken */
+    body.fire-shake {
+      animation: fireShake 0.45s ease-in-out;
+    }
+    @keyframes fireShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-7px) rotate(-0.5deg); }
+      40% { transform: translateX(7px) rotate(0.5deg); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+
+    /* Top Glowing Golden Ring Header */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(180deg, rgba(230, 184, 76, 0.16) 0%, var(--surface) 100%);
+      border-bottom: 1.5px solid var(--border);
+      backdrop-filter: blur(10px);
+      padding: 10px 14px;
+    }
+
+    .header-inner {
+      max-width: 820px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .ring-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: transparent;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 20px;
+      text-align: right;
+      flex: 1;
+      min-height: 64px;
+    }
+    .ring-btn:active { transform: scale(0.97); }
+
+    .ring-orb {
+      width: 66px;
+      height: 66px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      position: relative;
+      display: grid;
+      place-items: center;
+      animation: ringPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes ringPulse {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(249, 222, 125, 0.55)); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 18px rgba(249, 222, 125, 0.95)); transform: scale(1.06); }
+    }
+
+    .ring-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--gold-bright);
+      line-height: 1.2;
+    }
+    .ring-sub {
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .points-pill {
+      background: rgba(230, 184, 76, 0.18);
+      border: 1.5px solid var(--gold);
+      border-radius: 999px;
+      padding: 8px 13px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .points-val {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--gold-bright);
+      display: block;
+    }
+    .rank-val {
+      font-size: 0.74rem;
+      color: var(--muted);
+      display: block;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Kid-friendly Big Buttons & Chips */
+    .big-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 54px;
+      padding: 12px 18px;
+      border-radius: 18px;
+      border: 2px solid transparent;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+    .big-btn:active { transform: scale(0.97); }
+    .big-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+      color: #12151e;
+    }
+    .btn-emerald {
+      background: linear-gradient(135deg, #34d399, var(--emerald));
+      color: #07221d;
+    }
+    .btn-sky {
+      background: linear-gradient(135deg, #7dd3fc, var(--sky));
+      color: #082032;
+    }
+    .btn-amber {
+      background: linear-gradient(135deg, #fde047, var(--amber));
+      color: #1f1604;
+    }
+    .btn-outline {
+      background: var(--card-2);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    /* Search & Category Chips */
+    .search-box {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 18px;
+      border: 2px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 10px 16px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .search-box:focus { border-color: var(--gold-bright); }
+
+    .chips-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .chips-row::-webkit-scrollbar { display: none; }
+
+    .chip-btn {
+      flex-shrink: 0;
+      min-height: 48px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 2px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.94rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chip-btn.selected {
+      background: rgba(230, 184, 76, 0.24);
+      border-color: var(--gold-bright);
+      color: var(--gold-bright);
+    }
+
+    /* Progress Banner */
+    .progress-banner {
+      background: linear-gradient(135deg, rgba(230, 184, 76, 0.2), var(--card));
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .bar-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.28);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--gold-bright));
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .cat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      background: rgba(45, 212, 191, 0.16);
+      color: var(--emerald);
+    }
+
+    .card-actions-mini {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-circle-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--card-2);
+      color: var(--gold-bright);
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+    .icon-circle-btn.active {
+      background: var(--gold);
+      color: #111;
+    }
+
+    .card-title {
+      font-size: 1.18rem;
+      font-weight: 800;
+      margin: 0;
+      color: var(--text);
+    }
+    .card-sub {
+      font-size: 0.93rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .card-footer-btns {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 60;
+      background: var(--surface);
+      border-top: 1.5px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 8px calc(8px + env(safe-area-inset-bottom));
+    }
+    .nav-btn {
+      flex: 1;
+      max-width: 150px;
+      min-height: 58px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+    .nav-btn.active {
+      background: rgba(230, 184, 76, 0.22);
+      color: var(--gold-bright);
+    }
+    .nav-ico { font-size: 1.35rem; }
+
+    /* Modal Sheet for Discovery + Smart Artist + Voice Reader */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(6, 9, 16, 0.82);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 820px;
+      max-height: 94vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      border: 1.5px solid var(--border);
+      padding: 18px 16px 32px;
+      animation: slideUp 0.24s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(35px); opacity: 0.4; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .studio-box {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    #artist-canvas {
+      width: 100%;
+      height: 230px;
+      border-radius: 16px;
+      border: 2px solid var(--gold);
+      display: block;
+      background: #0e1525;
+    }
+
+    .btn-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .btn-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    /* Highlighted Word */
+    .spoken-word-hl {
+      background: #fde047;
+      color: #111827;
+      font-weight: 800;
+      border-radius: 6px;
+      padding: 1px 4px;
+      box-shadow: 0 0 10px rgba(253, 224, 71, 0.55);
+    }
+
+    .story-box {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 15px;
+      font-size: 1.06rem;
+      line-height: 1.85;
+      border: 1px solid var(--border);
+    }
+
+    .fact-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 8px 0;
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+
+    /* Interactive Illusion / Mind Lab */
+    .lab-box {
+      background: var(--card-2);
+      border: 1.5px solid var(--emerald);
+      border-radius: 18px;
+      padding: 14px;
+      margin: 12px 0;
+    }
+
+    /* Toast (Friendly Amber/Gold - Never Red) */
+    #toast-banner {
+      position: fixed;
+      top: 86px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 500;
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+      color: #111827;
+      font-weight: 800;
+      font-size: 0.96rem;
+      padding: 10px 20px;
+      border-radius: 999px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      display: none;
+      text-align: center;
+      max-width: 90vw;
+    }
+    #toast-banner.show { display: block; animation: fadeIn 0.2s ease; }
+
+    /* Game Views */
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .mem-card {
+      aspect-ratio: 1;
+      border-radius: 18px;
+      border: 2px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 1.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .mem-card.open {
+      background: rgba(230, 184, 76, 0.22);
+      border-color: var(--gold-bright);
+    }
+    .mem-card.matched {
+      background: rgba(45, 212, 191, 0.22);
+      border-color: var(--emerald);
+    }
+
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .digit-slots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .digit-slot {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      border: 2px solid var(--gold-bright);
+      background: var(--card);
+      color: var(--gold-bright);
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+    }
+
+    .ring-dial-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="gold-flash-overlay"></div>
+  <div id="toast-banner"></div>
+
+  <!-- Top Glowing Golden Solomon's Ring Header -->
+  <header class="top-header">
+    <div class="header-inner">
+      <button class="ring-btn" id="btn-golden-ring" title="اضغط الخاتم لاكتشاف عشوائي">
+        <div class="ring-orb">
+          <svg width="64" height="64" viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fff3b0"/>
+                <stop offset="45%" stop-color="#f9de7d"/>
+                <stop offset="100%" stop-color="#b3831e"/>
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="44" fill="rgba(249,222,125,0.16)" />
+            <circle cx="50" cy="50" r="32" fill="#121a2b" stroke="url(#goldGrad)" stroke-width="10"/>
+            <polygon points="50,24 58,42 76,50 58,58 50,76 42,58 24,50 42,42" fill="none" stroke="#f9de7d" stroke-width="2.6"/>
+            <rect x="33" y="33" width="34" height="34" fill="none" stroke="#e6b84c" stroke-width="2.2" transform="rotate(45 50 50)"/>
+            <circle cx="50" cy="50" r="5" fill="#fff3b0"/>
+          </svg>
+        </div>
+        <div>
+          <div class="ring-title">💍 خاتم سليمان</div>
+          <div class="ring-sub">✨ اضغط الخاتم لاكتشاف عشوائي وعيش الحدث</div>
+        </div>
+      </button>
+
+      <div class="points-pill">
+        <span class="points-val" id="header-points">⭐ 0 نقطة</span>
+        <span class="rank-val" id="header-rank">مستكشف صغير • 0/15</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- PAGE 1: اكتشف -->
+    <section id="page-discover" class="page active">
+      <input type="text" id="search-input" class="search-box" placeholder="🔍 ابحث عن أخطبوط، سقطرى، الأهرامات، نار..." />
+      <div class="chips-row" id="category-chips"></div>
+      <div class="progress-banner" id="banner-random-discover">
+        <div style="flex:1">
+          <div style="font-weight:800;font-size:1rem;" id="discover-progress-text">تم توثيق 0 من 15 اكتشافاً حقيقياً</div>
+          <div class="bar-track"><div class="bar-fill" id="discover-progress-bar" style="width:0%"></div></div>
+        </div>
+        <div class="big-btn btn-gold" style="min-height:48px;padding:8px 14px;font-size:0.9rem;">✨ فاجئني</div>
+      </div>
+      <div class="cards-grid" id="discover-grid"></div>
+    </section>
+
+    <!-- PAGE 2: العب -->
+    <section id="page-play" class="page">
+      <div id="play-hub">
+        <h2 style="margin:4px 0 6px;color:var(--gold-bright);">🎮 ساحة الألعاب الذكية</h2>
+        <p style="margin:0 0 14px;color:var(--muted);">اختر لعبة، استمع للشرح بصوت واضح، واجمع النقاط لترتقي إلى سيد الخاتم!</p>
+        <div class="cards-grid" id="games-grid"></div>
+      </div>
+      <div id="active-game-container" style="display:none;"></div>
+    </section>
+
+    <!-- PAGE 3: مجموعتي -->
+    <section id="page-collection" class="page">
+      <h2 style="margin:4px 0 6px;color:var(--gold-bright);">🔖 مجموعتي الذهبية</h2>
+      <p style="margin:0 0 12px;color:var(--muted);">احفظ عجائبك المفضلة واستعد لقراءتها ورسمها في أي وقت بدون إنترنت</p>
+      <div class="btn-grid-2" style="margin-bottom:14px;">
+        <button class="big-btn btn-gold" id="tab-col-saved">🔖 المحفوظة (<span id="count-saved">0</span>)</button>
+        <button class="big-btn btn-outline" id="tab-col-discovered">✅ المكتشفة (<span id="count-disc">0</span>)</button>
+      </div>
+      <div class="cards-grid" id="collection-grid"></div>
+    </section>
+
+    <!-- PAGE 4: حسابي -->
+    <section id="page-account" class="page">
+      <div class="studio-box" style="background:linear-gradient(135deg, rgba(230,184,76,0.18), var(--card));">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:1.35rem;font-weight:800;" id="profile-name-display">🧭 المستكشف</div>
+            <div style="color:var(--gold-bright);font-weight:800;margin-top:4px;" id="profile-rank-display">مستكشف صغير</div>
+          </div>
+          <button class="big-btn btn-outline" id="btn-rename" style="min-height:48px;">✏️ غيّر اسمك</button>
+        </div>
+        <div id="rename-row" style="display:none;margin-top:10px;gap:8px;">
+          <input type="text" id="rename-input" class="search-box" style="margin:0;flex:1;" placeholder="اكتب اسمك هنا..." />
+          <button class="big-btn btn-gold" id="btn-save-name">حفظ</button>
+        </div>
+        <div style="margin-top:14px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.9rem;">
+            <span id="profile-pts-label">⭐ 0 نقطة</span>
+            <span id="profile-next-label">المتبقي للرتبة التالية: 200</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" id="profile-rank-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <h3 style="color:var(--gold-bright);margin:14px 0 8px;">🏆 المستويات والرتب</h3>
+      <div id="ranks-ladder" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
+
+      <h3 style="color:var(--gold-bright);margin:14px 0 8px;">📊 إحصائياتي</h3>
+      <div class="btn-grid-2" id="stats-grid" style="margin-bottom:14px;"></div>
+
+      <div class="studio-box" style="display:flex;flex-direction:column;gap:10px;">
+        <button class="big-btn btn-outline" id="btn-toggle-theme">🌙 تبديل المظهر (ليلي / نهاري)</button>
+        <div style="padding:12px;border-radius:14px;background:rgba(45,212,191,0.14);color:var(--text);font-size:0.92rem;line-height:1.6;">
+          ⚡ يعمل 100% بدون إنترنت • بدون API • بدون جوجل. جميع قصصك ورسوماتك ونقاطك محفوظة بأمان على جهازك.
+        </div>
+        <button class="big-btn btn-amber" id="btn-reset-progress">🔄 إعادة ضبط النقاط والتقدم</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Navigation (4 Pages) -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-page="discover"><span class="nav-ico">🧭</span><span>اكتشف</span></button>
+    <button class="nav-btn" data-page="play"><span class="nav-ico">🎮</span><span>العب</span></button>
+    <button class="nav-btn" data-page="collection"><span class="nav-ico">🔖</span><span>مجموعتي</span></button>
+    <button class="nav-btn" data-page="account"><span class="nav-ico">👤</span><span>حسابي</span></button>
+  </nav>
+
+  <!-- Discovery Modal Sheet (Smart Canvas Artist + Live Arabic Reader) -->
+  <div class="modal-backdrop" id="discovery-modal">
+    <div class="modal-sheet">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;">
+        <span class="cat-badge" id="modal-badge">✨ اكتشاف موثق</span>
+        <button class="big-btn btn-outline" id="btn-close-modal" style="min-height:46px;padding:8px 16px;">✖️ إغلاق</button>
+      </div>
+
+      <!-- Smart Canvas Artist Studio -->
+      <div class="studio-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <strong style="color:var(--gold-bright);">🎨 الرسام الذكي (Canvas)</strong>
+          <span class="cat-badge" id="artist-style-badge">تلقائي</span>
+        </div>
+
+        <canvas id="artist-canvas" width="900" height="520"></canvas>
+        <div class="bar-track" id="artist-progress-wrap" style="margin-top:8px;">
+          <div class="bar-fill" id="artist-progress-bar" style="width:0%"></div>
+        </div>
+
+        <!-- 4 Drawing Modes -->
+        <div class="chips-row" style="margin-top:10px;margin-bottom:8px;" id="art-style-chips"></div>
+
+        <!-- BIG Hero Action: Draw + Read Together -->
+        <button class="big-btn btn-emerald" id="btn-draw-read-live" style="width:100%;margin-bottom:8px;font-size:1.05rem;">
+          🎬🎨🔊 ارسم + اقرأ مع بعض - عيش الحدث
+        </button>
+
+        <!-- Save, Share, Draw Another Style -->
+        <div class="btn-grid-2" style="margin-bottom:8px;">
+          <button class="big-btn btn-sky" id="btn-save-art">💾 حفظ الرسم</button>
+          <button class="big-btn btn-amber" id="btn-share-art">📤 مشاركة الرسم</button>
+        </div>
+        <button class="big-btn btn-outline" id="btn-draw-other" style="width:100%;">
+          🔄 ارسم بطريقة ثانية
+        </button>
+      </div>
+
+      <!-- Arabic Offline Voice Reader -->
+      <div class="studio-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <strong style="color:var(--gold-bright);">🔊 القارئ الصوتي العربي</strong>
+          <span id="tts-status-pill" style="font-size:0.86rem;color:var(--emerald);font-weight:700;">جاهز</span>
+        </div>
+
+        <div id="reaction-pill" style="display:none;background:#fde047;color:#111827;font-weight:800;padding:8px 14px;border-radius:12px;margin-bottom:10px;text-align:center;"></div>
+
+        <!-- اسمع / وقف / توقف -->
+        <div class="btn-grid-3" style="margin-bottom:10px;">
+          <button class="big-btn btn-gold" id="btn-tts-play">🔊 اسمع</button>
+          <button class="big-btn btn-outline" id="btn-tts-pause">⏸️ وقف</button>
+          <button class="big-btn btn-outline" id="btn-tts-stop">⏹️ توقف</button>
+        </div>
+
+        <!-- 3 Speeds -->
+        <div class="chips-row" id="tts-speed-chips" style="margin-bottom:4px;"></div>
+        <!-- 3 Voices -->
+        <div class="chips-row" id="tts-voice-chips" style="margin-bottom:0;"></div>
+      </div>
+
+      <!-- Highlighted Story & Facts -->
+      <h2 id="modal-title" style="margin:6px 0 4px;"></h2>
+      <div id="modal-subtitle" style="color:var(--gold-bright);font-weight:700;margin-bottom:10px;"></div>
+      <div class="story-box" id="modal-live-text"></div>
+
+      <div id="modal-lab-container"></div>
+
+      <div id="modal-facts-list" style="margin-top:12px;"></div>
+      <div id="modal-ref" style="font-size:0.84rem;color:var(--muted);margin-top:8px;"></div>
+
+      <div class="btn-grid-2" style="margin-top:16px;">
+        <button class="big-btn btn-gold" id="btn-modal-fav">🔖 حفظ في مجموعتي</button>
+        <button class="big-btn btn-outline" id="btn-modal-another">💍 اكتشاف عشوائي آخر</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* ===================== DATA: 15 REAL DOCUMENTED DISCOVERIES ===================== */
+      var CATEGORIES = [
+        { id: "all", label: "الكل", icon: "✨" },
+        { id: "animals", label: "حيوانات غريبة", icon: "🐙" },
+        { id: "places", label: "أماكن غامضة", icon: "🗺️" },
+        { id: "illusions", label: "خدع بصرية", icon: "👁️" },
+        { id: "mind", label: "ألغاز العقل", icon: "🧠" },
+        { id: "history", label: "أسرار تاريخية", icon: "🏛️" }
+      ];
+
+      var DISCOVERIES = [
+        {
+          id: "octopus_three_hearts",
+          title: "الأخطبوط ذو الثلاثة قلوب",
+          subtitle: "كائن بحري بـ 3 قلوب و9 أدمغة ودم أزرق",
+          category: "animals",
+          location: "المحيطات والبحار حول العالم",
+          summary: "يمتلك الأخطبوط نظاماً حيوياً مدهشاً؛ إذ يضخ دمه الأزرق عبر ثلاثة قلوب مستقلة، ويتحكم في أذرعه الثمانية بتسعة مراكز عصبية.",
+          facts: [
+            "قلبان يضخان الدم إلى الخياشيم لالتقاط الأكسجين، وقلب ثالث مركزي يضخ الدم لبقية الجسم.",
+            "يتوقف القلب المركزي عن النبض مؤقتاً أثناء السباحة، ولذلك يفضل الأخطبوط الزحف لتوفير الطاقة.",
+            "دمه أزرق اللون لأنه يعتمد على معدن النحاس بدلاً من الحديد في نقل الأكسجين."
+          ],
+          ref: "موثق علمياً في علم الأحياء البحرية"
+        },
+        {
+          id: "immortal_jellyfish",
+          title: "قنديل البحر الخالد",
+          subtitle: "يعيد ساعته البيولوجية ليبدأ حياته من جديد",
+          category: "animals",
+          location: "البحر المتوسط ومحيطات العالم",
+          summary: "يُعرف علمياً باسم توريتوبسيس دورني، وهو الكائن الوحيد المعروف القادر على عكس دورة حياته والعودة من طور البلوغ إلى الطفولة عند الخطر.",
+          facts: [
+            "عندما يجوع أو يصاب تتحول خلاياه البالغة إلى مستعمرة صغيرة شابة تبدأ النمو من جديد.",
+            "يبلغ قطره نحو 4.5 مليمتر فقط، أي أصغر من ظفر الإصبع الصغير.",
+            "لا يموت بالشيخوخة الطبيعية لكنه قد يقع فريسة لأسماك البحر."
+          ],
+          ref: "موثق في دراسات علم البحار"
+        },
+        {
+          id: "tardigrade_water_bear",
+          title: "دب الماء (التارديغراد)",
+          subtitle: "أصلب كائن مجهري ينجو في الفضاء",
+          category: "animals",
+          location: "الطحالب والبيئات الرطبة",
+          summary: "كائن مجهري بثماني أرجل طوله أقل من مليمتر واحد، يدخل في سبات حيوي يجعله يتحمل حرارة البراكين وبرد الفضاء.",
+          facts: [
+            "يتحمل درجات حرارة من 272 تحت الصفر حتى 150 درجة مئوية.",
+            "نجا التارديغراد في تجربة فضائية حقيقية عام 2007 من فراغ الفضاء والإشعاع الشمسي.",
+            "يمكنه البقاء بلا ماء عشرات السنين ثم يعود للحركة بمجرد ملامسة قطرة ماء."
+          ],
+          ref: "موثق في أبحاث وكالة الفضاء الأوروبية"
+        },
+        {
+          id: "socotra_island",
+          title: "جزيرة سقطرى الساحرة",
+          subtitle: "أشجار دم الأخوين وتنوع نباتي لا مثيل له",
+          category: "places",
+          location: "اليمن — المحيط الهندي",
+          summary: "تُلقب بأغرب جزيرة في العالم لأن ثلث نباتاتها لا ينمو في أي مكان آخر على كوكب الأرض، وأشهرها شجرة دم الأخوين المظلية.",
+          facts: [
+            "تفرز شجرة دم الأخوين عصارة حمراء داكنة استُخدمت تاريخياً في الطب والأصباغ.",
+            "تضم الجزيرة أكثر من 300 نوع نباتي فريد ومغارات جيرية مذهلة تحت الجبال.",
+            "أدرجتها اليونسكو ضمن قائمة التراث العالمي الطبيعي عام 2008."
+          ],
+          ref: "موقع تراث عالمي موثق لدى اليونسكو"
+        },
+        {
+          id: "pink_lake_hillier",
+          title: "بحيرة هيلير الوردية",
+          subtitle: "بحيرة طبيعية بلون وردي زاهٍ لا يتغير",
+          category: "places",
+          location: "غرب أستراليا",
+          summary: "تقع بحيرة هيلير وسط غابات خضراء بجانب المحيط الأزرق، وتحتفظ بلونها الوردي الحليبي الثابت طوال العام حتى في كوب زجاجي.",
+          facts: [
+            "يعود لونها الوردي إلى طحالب مجهرية وبكتيريا محبة للملوحة تنتج صبغة البيتا كاروتين.",
+            "تبلغ ملوحتها قرابة ملوحة البحر الميت ومياهها آمنة للسباحة.",
+            "رُصدت في السجلات الملاحية لأول مرة عام 1802."
+          ],
+          ref: "ظاهرة طبيعية موثقة في غرب أستراليا"
+        },
+        {
+          id: "door_to_hell_darvaza",
+          title: "باب جهنم (فوهة دارفازا)",
+          subtitle: "حفرة غاز مشتعلة بالنار منذ أكثر من 50 عاماً",
+          category: "places",
+          location: "صحراء قره قوم — تركمانستان",
+          summary: "فوهة عملاقة بعرض 70 متراً تتوهج فيها ألسنة النار ليل نهار وسط الصحراء دون انقطاع منذ عام 1971.",
+          facts: [
+            "انهارت الأرض عام 1971 فوق جيب غاز طبيعي أثناء أعمال حفر جيولوجية.",
+            "أشعل الجيولوجيون النار فيها ظناً أن الغاز سينفد خلال أسابيع، لكن النار ما زالت مشتعلة حتى اليوم.",
+            "يمكن رؤية توهج النار البرتقالي من مسافات بعيدة في ليل الصحراء."
+          ],
+          ref: "ظاهرة جيولوجية موثقة في تركمانستان"
+        },
+        {
+          id: "derinkuyu_underground_city",
+          title: "مدينة ديرينكويو تحت الأرض",
+          subtitle: "مدينة كاملة من 18 طابقاً منحوتة في الصخر",
+          category: "history",
+          location: "كابادوكيا — تركيا",
+          summary: "أعمق مدينة أثرية تحت الأرض في تركيا تمتد لعمق 85 متراً وتحتوي على مخابز وآبار تهوية وأبواب حجرية سرية.",
+          facts: [
+            "كانت تتسع لإيواء قرابة 20 ألف شخص مع مؤنهم لفترات طويلة.",
+            "تضم أكثر من 50 عمود تهوية رأسياً يمد الطوابق السفلية بالهواء النقي.",
+            "أعيد اكتشافها بالصدفة عام 1963 عندما هدم أحد السكان جداراً في قبو منزله."
+          ],
+          ref: "موقع أثري موثق في تركيا"
+        },
+        {
+          id: "great_pyramid_giza",
+          title: "أسرار الهرم الأكبر بالجيزة",
+          subtitle: "دقة فلكية وهندسية حيرت العلماء 4500 عام",
+          category: "history",
+          location: "الجيزة — مصر",
+          summary: "بُني هرم الملك خوفو من نحو 2.3 مليون كتلة حجرية، وكان مغطى بحجر مصقول يعكس الشمس كجوهرة ساطعة من ذهب.",
+          facts: [
+            "يتجه الهرم نحو الشمال الجغرافي الحقيقي بدقة خطأ لا تتجاوز 0.05 درجة.",
+            "درجة الحرارة داخل حجرة الملك تبقى ثابتة تقريباً عند 20 درجة مئوية طوال العام.",
+            "نُقلت كتل الجرانيت التي تزن عشرات الأطنان من أسوان على بُعد أكثر من 800 كيلومتر."
+          ],
+          ref: "الوحيدة الباقية من عجائب الدنيا السبع القديمة"
+        },
+        {
+          id: "antikythera_mechanism",
+          title: "آلية أنتيكيثيرا الفلكية",
+          subtitle: "أقدم حاسوب ميكانيكي بالتروس في التاريخ",
+          category: "history",
+          location: "جزيرة أنتيكيثيرا — اليونان",
+          summary: "جهاز برونزي عتيق يضم أكثر من 30 ترساً مسنناً من القرن الثاني قبل الميلاد استُخرج من حطام سفينة غارقة.",
+          facts: [
+            "كان يحسب بدقة مواقع الشمس والقمر والكواكب ومواعيد الكسوف والخسوف.",
+            "تضمن قرصاً ذهبي الحساب يحدد دورات الألعاب الأولمبية القديمة كل 4 سنوات.",
+            "سبق تكنولوجيا الساعات والتروس الميكانيكية في أوروبا بنحو 1400 عام."
+          ],
+          ref: "معروض في المتحف الأثري الوطني بأثينا"
+        },
+        {
+          id: "muller_lyer_illusion",
+          title: "خدعة مولر-لاير البصرية",
+          subtitle: "خطان متساويان تماماً يراهما عقلك مختلفين",
+          category: "illusions",
+          location: "علم النفس البصري — 1889",
+          summary: "رغم تطابق طول الخطين الأفقيين تماماً، فإن اتجاه الأسهم عند الأطراف يخدع الدماغ في تفسير البُعد والمنظور.",
+          facts: [
+            "ابتكرها عالم النفس فرانز مولر-لاير عام 1889.",
+            "يفسر الدماغ الأسهم كزوايا غرف قريبة أو بعيدة.",
+            "جرّب إظهار خطوط القياس في المختبر بالأسفل لتتأكد بنفسك!"
+          ],
+          ref: "تجربة موثقة في الإدراك البصري",
+          lab: "muller"
+        },
+        {
+          id: "hermann_grid_illusion",
+          title: "شبكة هيرمان والنقاط الشبحية",
+          subtitle: "نقاط رمادية تظهر وتختفي عند التقاطعات البيضاء",
+          category: "illusions",
+          location: "فسيولوجيا الرؤية — 1870",
+          summary: "عند النظر إلى شبكة من المربعات الداكنة تفصلها خطوط بيضاء، ترى نقاطاً رمادية عند التقاطعات الجانبية وتختفي حين تنظر إليها مباشرة!",
+          facts: [
+            "اكتشفها لوديمار هيرمان عام 1870.",
+            "تحدث بسبب آلية التثبيط الجانبي في خلايا شبكية العين.",
+            "بؤرة النظر المركزية أكثر دقة من الرؤية المحيطية."
+          ],
+          ref: "ظاهرة موثقة في علم الأعصاب البصري",
+          lab: "hermann"
+        },
+        {
+          id: "simultaneous_contrast_illusion",
+          title: "خدعة التباين اللوني المتزامن",
+          subtitle: "مربعان بنفس اللون تماماً يبدوان مختلفين",
+          category: "illusions",
+          location: "علوم الألوان والإدراك",
+          summary: "يبدو المربع الرمادي فوق الخلفية الداكنة مضيئاً، بينما يبدو المربع نفسه داكناً فوق الخلفية البيضاء رغم تطابقهما 100%.",
+          facts: [
+            "يقيس نظامنا البصري الألوان بالمقارنة مع محيطها لا بشكل مطلق.",
+            "ادمج المربعين معاً في التجربة التفاعلية بالأسفل لتشاهد الحقيقة!"
+          ],
+          ref: "مبدأ موثق في بصريات الألوان",
+          lab: "contrast"
+        },
+        {
+          id: "monty_hall_paradox",
+          title: "معضلة الأبواب الثلاثة",
+          subtitle: "لماذا يضاعف تغيير قرارك فرصتك في الفوز بالكنز والذهب؟",
+          category: "mind",
+          location: "نظرية الاحتمالات",
+          summary: "أمامك 3 أبواب: خلف أحدها كنز من ذهب وخلف البابين الآخرين فراغ. بعد اختيارك يُفتح باب فارغ؛ تبديل اختيارك يرفع فرص فوزك إلى 66.7%!",
+          facts: [
+            "فرصتك في الاختيار الأول كانت الثلث فقط (33%).",
+            "تتركز فرصة الثلثين (66.7%) في الباب المتبقي بعد كشف الباب الفارغ.",
+            "شغّل محاكاة الـ 100 جولة بالأسفل لترى النتيجة الحقيقية!"
+          ],
+          ref: "معضلة موثقة في نظرية الاحتمالات",
+          lab: "monty"
+        },
+        {
+          id: "birthday_paradox",
+          title: "مفارقة عيد الميلاد",
+          subtitle: "23 شخصاً فقط يكفون لتشابه يوم ميلاد اثنين بنسبة > 50%",
+          category: "mind",
+          location: "الرياضيات التوافقية",
+          summary: "تبدو مفاجئة، لكن في غرفة تضم 23 شخصاً فقط تتجاوز فرصة تطابق عيد ميلاد شخصين نسبة النصف!",
+          facts: [
+            "مع 23 شخصاً يوجد 253 مقارنة مختلفة بين الأزواج.",
+            "عند 50 شخصاً يقفز الاحتمال إلى 97% تقريباً.",
+            "حرّك الشريط بالأسفل وشاهد صعود النسبة مباشرة."
+          ],
+          ref: "نتيجة رياضية موثقة",
+          lab: "birthday"
+        },
+        {
+          id: "zeigarnik_effect",
+          title: "تأثير زيغارنيك للذاكرة",
+          subtitle: "لماذا يتذكر عقلك القصص والمهام غير المكتملة؟",
+          category: "mind",
+          location: "علم النفس المعرفي — 1927",
+          summary: "يتذكر الدماغ المهام غير المكتملة والألغاز المفتوحة بشكل أقوى بكثير من المهام التي أُنجزت وأُغلقت.",
+          facts: [
+            "لاحظت بلوما زيغارنيك أن النادلين يتذكرون طلبات الزبائن قبل الدفع وينسونها فور إغلاق الفاتورة.",
+            "تدوين المهام المعلقة على ورقة يريح الذاكرة ويهدئ العقل."
+          ],
+          ref: "دراسة موثقة في علم النفس المعرفي",
+          lab: "zeigarnik"
+        }
+      ];
+
+      var QUIZ_QUESTIONS = [
+        { q: "كم قلباً يمتلك الأخطبوط في جسمه؟", opts: ["قلب واحد", "قلبان", "ثلاثة قلوب", "أربعة قلوب"], ans: 2, exp: "يمتلك الأخطبوط 3 قلوب ودمه أزرق!" },
+        { q: "بماذا تشتهر جزيرة سقطرى اليمنية؟", opts: ["أشجار دم الأخوين النادرة", "مدينة تحت الأرض", "فوهة مشتعلة بالنار", "أكبر هرم"], ans: 0, exp: "تشتهر سقطرى بأشجار دم الأخوين الفريدة." },
+        { q: "كم طابقاً تمتد مدينة ديرينكويو تحت الأرض في تركيا؟", opts: ["3 طوابق", "7 طوابق", "18 طابقاً", "40 طابقاً"], ans: 2, exp: "تمتد عبر 18 طابقاً بعمق 85 متراً." },
+        { q: "أين تقع فوهة باب جهنم المشتعلة بالنار؟", opts: ["تركمانستان", "أستراليا", "مصر", "اليونان"], ans: 0, exp: "تقع في صحراء قره قوم في تركمانستان." },
+        { q: "ما لون بحيرة هيلير في أستراليا؟", opts: ["أخضر", "وردي طبيعي", "أصفر ذهبي", "بنفسجي"], ans: 1, exp: "بحيرة هيلير ذات لون وردي طبيعي ثابت." },
+        { q: "كم شخصاً يكفي لتجاوز احتمال 50% لتطابق يوم الميلاد؟", opts: ["23 شخصاً", "80 شخصاً", "183 شخصاً", "365 شخصاً"], ans: 0, exp: "23 شخصاً فقط يكفون بفضل 253 مقارنة زوجية!" }
+      ];
+
+      var MEMORY_ITEMS = [
+        { id: "ring", icon: "💍", label: "الخاتم" },
+        { id: "oct", icon: "🐙", label: "الأخطبوط" },
+        { id: "pyr", icon: "🔺", label: "الهرم" },
+        { id: "tree", icon: "🌳", label: "سقطرى" },
+        { id: "fire", icon: "🔥", label: "النار" },
+        { id: "gold", icon: "✨", label: "الذهب" }
+      ];
+
+      var SOLOMON_STAGES = [
+        {
+          title: "ختم الطبيعة: الشمس والشجرة والماء",
+          clue: "اجعل الشمس في الحلقة الخارجية، والشجرة في الوسطى، والماء في الداخلية.",
+          outer: ["☀️ شمس", "🌙 قمر", "⭐ نجم", "🔥 نار"],
+          middle: ["🪨 صخر", "🌳 شجرة", "🦅 صقر", "⏳ رمل"],
+          inner: ["💨 ريح", "⚡ برق", "💧 ماء", "❄️ جليد"],
+          target: [0, 1, 2],
+          exp: "تشرق الشمس وتروي المياه الشجرة فتكتمل الحياة."
+        },
+        {
+          title: "ختم الأخطبوط والبحيرة الوردية",
+          clue: "اختر سقطرى في الخارج، والأخطبوط في الوسط، وبحيرة هيلير الوردية في الداخل.",
+          outer: ["🏔️ جبل", "🌳 سقطرى", "🏜️ صحراء", "🌋 بركان"],
+          middle: ["🐙 أخطبوط", "🦈 قرش", "🐢 سلحفاة", "🐋 حوت"],
+          inner: ["🌊 محيط", "❄️ نهر", "🩷 هيلير", "🌧️ مطر"],
+          target: [1, 0, 2],
+          exp: "رائع! جمعت عجائب الطبيعة الثلاث."
+        },
+        {
+          title: "ختم الأرقام الذهبية",
+          clue: "اجعل مجموع أرقام الحلقات الثلاث يساوي 15 بالضبط (3 + 4 + 8)!",
+          outer: ["1", "3", "5", "2"],
+          middle: ["4", "2", "6", "1"],
+          inner: ["5", "3", "8", "4"],
+          target: [1, 0, 2],
+          exp: "3 + 4 + 8 = 15! فككت ختم الأرقام الذهبية."
+        }
+      ];
+
+      var ART_MODES = [
+        { id: "auto", label: "🤖 تلقائي" },
+        { id: "realistic", label: "📷 واقعي" },
+        { id: "fantasy", label: "✨ خيالي" },
+        { id: "pencil", label: "✏️ قلم رصاص" }
+      ];
+
+      var SPEEDS = [
+        { id: "slow", label: "🐢 بطيء للأطفال الصغار", rate: 0.68, msWord: 520 },
+        { id: "normal", label: "🚶 عادي", rate: 1.0, msWord: 340 },
+        { id: "fast", label: "🚀 سريع", rate: 1.38, msWord: 230 }
+      ];
+
+      var VOICES = [
+        { id: "girl", label: "👧 صوت طفلة", pitch: 1.5 },
+        { id: "man", label: "👨 صوت رجل", pitch: 0.76 },
+        { id: "woman", label: "👩 صوت امرأة", pitch: 1.12 }
+      ];
+
+      /* ===================== STATE & OFFLINE STORAGE ===================== */
+      var STORAGE_KEY = "solomon_ring_v3_state";
+      var state = {
+        name: "المستكشف",
+        points: 0,
+        discovered: [],
+        favorites: [],
+        gamesWon: 0,
+        quizBest: 0,
+        memoryBest: 0,
+        solomonCleared: 0,
+        codesCracked: 0,
+        lightTheme: false
+      };
+
+      function loadState() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") {
+              Object.assign(state, parsed);
+            }
+          }
+        } catch (e) {}
+        if (state.lightTheme) document.body.classList.add("light");
+      }
+
+      function saveState() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+      }
+
+      function getRankInfo(pts) {
+        if (pts >= 500) return { title: "سيد الخاتم", min: 500, next: null, sub: "أعلى رتبة في موسوعة خاتم سليمان" };
+        if (pts >= 200) return { title: "مستكشف كبير", min: 200, next: 500, sub: "حامل مفتاح الأسرار الموثقة" };
+        return { title: "مستكشف صغير", min: 0, next: 200, sub: "بداية رحلة استكشاف عجائب العالم" };
+      }
+
+      function showToast(msg) {
+        var el = document.getElementById("toast-banner");
+        el.textContent = msg;
+        el.classList.add("show");
+        clearTimeout(el._timer);
+        el._timer = setTimeout(function () { el.classList.remove("show"); }, 2600);
+      }
+
+      function addPoints(pts, reason) {
+        var oldRank = getRankInfo(state.points).title;
+        state.points += pts;
+        saveState();
+        updateHeader();
+        var newRank = getRankInfo(state.points).title;
+        if (newRank !== oldRank) {
+          showToast("🏆 مبروك الترقية إلى: " + newRank + "!");
+        } else if (reason) {
+          showToast("⭐ +" + pts + " نقطة • " + reason);
+        }
+      }
+
+      /* ===================== VIBRATION & VISUAL REACTIONS ===================== */
+      function safeVibrate(pattern) {
+        try {
+          if (navigator && typeof navigator.vibrate === "function") {
+            navigator.vibrate(pattern);
+          }
+        } catch (e) {}
+      }
+
+      function triggerGoldFlash() {
+        var ov = document.getElementById("gold-flash-overlay");
+        ov.classList.remove("active");
+        void ov.offsetWidth;
+        ov.classList.add("active");
+      }
+
+      function triggerFireShake() {
+        safeVibrate([180, 50, 260]);
+        document.body.classList.remove("fire-shake");
+        void document.body.offsetWidth;
+        document.body.classList.add("fire-shake");
+      }
+
+      function showReaction(msg) {
+        var pill = document.getElementById("reaction-pill");
+        if (!pill) return;
+        pill.textContent = msg;
+        pill.style.display = "block";
+        clearTimeout(pill._t);
+        pill._t = setTimeout(function () { pill.style.display = "none"; }, 1700);
+      }
+
+      function checkKeywordReaction(word) {
+        var clean = word.replace(/[\u064B-\u065F\u0670،.؛:!?؟«»()"']/g, "");
+        if (clean.indexOf("أخطبوط") !== -1 || clean.indexOf("اخطبوط") !== -1) {
+          safeVibrate(200);
+          showReaction("🐙 اهتزاز الأخطبوط!");
+        } else if (clean.indexOf("نار") !== -1) {
+          triggerFireShake();
+          showReaction("🔥 نار! اهتزاز قوي!");
+        } else if (clean.indexOf("ذهب") !== -1) {
+          triggerGoldFlash();
+          showReaction("✨ ذهب! لمعان الشاشة!");
+        }
+      }
+
+      /* ===================== OFFLINE SPEECH SYNTHESIS ENGINE ===================== */
+      var ttsState = {
+        text: "",
+        words: [],
+        wordStarts: [],
+        speaking: false,
+        paused: false,
+        currentWordIdx: 0,
+        speedId: "normal",
+        voiceId: "woman",
+        timer: null,
+        boundarySeen: false,
+        onRenderHighlight: null
+      };
+
+      function getSpeedObj() {
+        return SPEEDS.find(function (s) { return s.id === ttsState.speedId; }) || SPEEDS[1];
+      }
+
+      function getVoiceObj() {
+        return VOICES.find(function (v) { return v.id === ttsState.voiceId; }) || VOICES[2];
+      }
+
+      function tokenizeText(txt) {
+        var words = [];
+        var starts = [];
+        var re = /\S+/g;
+        var m;
+        while ((m = re.exec(txt)) !== null) {
+          words.push(m[0]);
+          starts.push(m.index);
+        }
+        return { words: words, starts: starts };
+      }
+
+      function updateTtsUi() {
+        var playBtn = document.getElementById("btn-tts-play");
+        var pauseBtn = document.getElementById("btn-tts-pause");
+        var stopBtn = document.getElementById("btn-tts-stop");
+        var pill = document.getElementById("tts-status-pill");
+        if (playBtn) playBtn.disabled = ttsState.speaking;
+        if (pauseBtn) pauseBtn.disabled = !ttsState.speaking;
+        if (stopBtn) stopBtn.disabled = !ttsState.speaking && !ttsState.paused;
+        if (pill) {
+          pill.textContent = ttsState.speaking ? "🔊 يقرأ الآن" : (ttsState.paused ? "⏸️ متوقف مؤقتاً" : "جاهز");
+        }
+        if (typeof ttsState.onRenderHighlight === "function") {
+          ttsState.onRenderHighlight(ttsState.speaking || ttsState.paused ? ttsState.currentWordIdx : -1);
+        }
+      }
+
+      function stopTts() {
+        clearInterval(ttsState.timer);
+        ttsState.timer = null;
+        ttsState.speaking = false;
+        ttsState.paused = false;
+        ttsState.currentWordIdx = 0;
+        try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
+        updateTtsUi();
+      }
+
+      function pauseTts() {
+        if (!ttsState.speaking) return;
+        clearInterval(ttsState.timer);
+        ttsState.timer = null;
+        ttsState.speaking = false;
+        ttsState.paused = true;
+        try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
+        updateTtsUi();
+      }
+
+      function speakOutro() {
+        var outro = "خلصت! أحسنت يا مستكشف";
+        showReaction("🎉 " + outro);
+        try {
+          if (window.speechSynthesis) {
+            var u = new SpeechSynthesisUtterance(outro);
+            u.lang = "ar-SA";
+            u.rate = getSpeedObj().rate;
+            u.pitch = getVoiceObj().pitch;
+            var voices = window.speechSynthesis.getVoices() || [];
+            var arV = voices.find(function (v) { return v.lang && v.lang.indexOf("ar") === 0; });
+            if (arV) u.voice = arV;
+            window.speechSynthesis.speak(u);
+          }
+        } catch (e) {}
+      }
+
+      function speakText(fullText, fromWordIdx, onHighlight) {
+        if (typeof fromWordIdx !== "number") fromWordIdx = 0;
+        clearInterval(ttsState.timer);
+        ttsState.timer = null;
+        try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
+
+        var tok = tokenizeText(fullText);
+        ttsState.text = fullText;
+        ttsState.words = tok.words;
+        ttsState.wordStarts = tok.starts;
+        ttsState.currentWordIdx = Math.min(fromWordIdx, Math.max(0, tok.words.length - 1));
+        ttsState.speaking = true;
+        ttsState.paused = false;
+        ttsState.boundarySeen = false;
+        if (onHighlight) ttsState.onRenderHighlight = onHighlight;
+
+        var sliceStart = tok.starts[ttsState.currentWordIdx] || 0;
+        var slice = fullText.slice(sliceStart);
+
+        updateTtsUi();
+        if (tok.words[ttsState.currentWordIdx]) {
+          checkKeywordReaction(tok.words[ttsState.currentWordIdx]);
+        }
+
+        // Start synchronized fallback highlighter so yellow word highlight always runs reliably
+        var speedObj = getSpeedObj();
+        ttsState.timer = setInterval(function () {
+          if (!ttsState.speaking || ttsState.boundarySeen) return;
+          if (ttsState.currentWordIdx < ttsState.words.length - 1) {
+            ttsState.currentWordIdx++;
+            updateTtsUi();
+            checkKeywordReaction(ttsState.words[ttsState.currentWordIdx]);
+          } else {
+            clearInterval(ttsState.timer);
+            ttsState.timer = null;
+            ttsState.speaking = false;
+            ttsState.paused = false;
+            updateTtsUi();
+            speakOutro();
+          }
+        }, speedObj.msWord);
+
+        try {
+          if (window.speechSynthesis && typeof SpeechSynthesisUtterance !== "undefined") {
+            var utt = new SpeechSynthesisUtterance(slice);
+            utt.lang = "ar-SA";
+            utt.rate = speedObj.rate;
+            utt.pitch = getVoiceObj().pitch;
+            var voices = window.speechSynthesis.getVoices() || [];
+            var arVoices = voices.filter(function (v) { return v.lang && v.lang.toLowerCase().indexOf("ar") === 0; });
+            if (arVoices.length > 0) {
+              utt.voice = arVoices[0];
+            }
+
+            utt.onboundary = function (ev) {
+              if (!ttsState.speaking) return;
+              ttsState.boundarySeen = true;
+              var globalChar = sliceStart + ev.charIndex;
+              var foundIdx = ttsState.currentWordIdx;
+              for (var i = 0; i < ttsState.wordStarts.length; i++) {
+                if (ttsState.wordStarts[i] <= globalChar) foundIdx = i;
+              }
+              if (foundIdx !== ttsState.currentWordIdx) {
+                ttsState.currentWordIdx = foundIdx;
+                updateTtsUi();
+                checkKeywordReaction(ttsState.words[foundIdx] || "");
+              }
+            };
+
+            utt.onend = function () {
+              if (!ttsState.speaking) return;
+              clearInterval(ttsState.timer);
+              ttsState.timer = null;
+              ttsState.speaking = false;
+              ttsState.paused = false;
+              ttsState.currentWordIdx = 0;
+              updateTtsUi();
+              speakOutro();
+            };
+
+            window.speechSynthesis.speak(utt);
+          }
+        } catch (e) {}
+      }
+
+      /* ===================== SMART CANVAS PAINTER ===================== */
+      var artistState = {
+        item: null,
+        mode: "auto",
+        seed: 0,
+        progress: 1,
+        rafId: null
+      };
+
+      function resolveArtStyle(mode, category) {
+        if (mode !== "auto") return mode;
+        if (category === "animals") return "realistic";
+        if (category === "places") return "fantasy";
+        return "pencil";
+      }
+
+      function getPalette(style) {
+        if (style === "pencil") {
+          return { style: "pencil", sky1: "#f6f1e4", sky2: "#e8dfc9", g1: "#d6ccb8", g2: "#b4aa97", stroke: "#1f1f1f", acc1: "#2c2c2c", acc2: "#555555", hl: "#faf7ee" };
+        }
+        if (style === "fantasy") {
+          return { style: "fantasy", sky1: "#140d2e", sky2: "#341d66", g1: "#1f1442", g2: "#4b267d", stroke: "#f9de7d", acc1: "#f9de7d", acc2: "#2dd4bf", hl: "#fff3b0" };
+        }
+        return { style: "realistic", sky1: "#0e345a", sky2: "#2a6f97", g1: "#1a435e", g2: "#2b5876", stroke: "#0b1f33", acc1: "#e68a4c", acc2: "#38bdf8", hl: "#f8fafc" };
+      }
+
+      function drawCanvasArt(canvas, item, requestedMode, progress, seed) {
+        var ctx = canvas.getContext("2d");
+        var w = canvas.width;
+        var h = canvas.height;
+        var eff = resolveArtStyle(requestedMode, item.category);
+        var pal = getPalette(eff);
+        var p = Math.max(0, Math.min(1, progress));
+        var bgP = Math.min(1, p / 0.25);
+        var midP = Math.max(0, Math.min(1, (p - 0.18) / 0.42));
+        var detP = Math.max(0, Math.min(1, (p - 0.5) / 0.35));
+        var finP = Math.max(0, Math.min(1, (p - 0.8) / 0.2));
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Layer 1: Backdrop
+        if (pal.style === "pencil") {
+          ctx.fillStyle = pal.sky1;
+          ctx.fillRect(0, 0, w, h);
+          ctx.strokeStyle = "rgba(180,170,150,0.28)";
+          ctx.lineWidth = 1;
+          var lines = Math.floor(20 * bgP);
+          for (var i = 0; i < lines; i++) {
+            var y = (i / 20) * h;
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w * bgP, y); ctx.stroke();
+          }
+          if (bgP > 0.3) {
+            ctx.strokeStyle = "rgba(31,31,31,0.35)";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(14, 14, w - 28, h - 28);
+          }
+        } else {
+          var grad = ctx.createLinearGradient(0, 0, 0, h);
+          grad.addColorStop(0, pal.sky1);
+          grad.addColorStop(1, pal.sky2);
+          ctx.globalAlpha = Math.max(0.3, bgP);
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, w, h);
+          ctx.globalAlpha = 1;
+
+          if (pal.style === "fantasy") {
+            for (var s = 0; s < Math.floor(28 * bgP); s++) {
+              var sx = ((s * 173 + seed * 37) % 100) / 100 * w;
+              var sy = ((s * 97 + seed * 19) % 70) / 100 * h;
+              ctx.fillStyle = pal.hl;
+              ctx.beginPath();
+              ctx.arc(sx, sy, 1.5 + (s % 3), 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        }
+
+        // Layer 2 & 3: Subject Illustration
+        if (midP > 0) {
+          ctx.save();
+          if (item.id === "octopus_three_hearts") {
+            var cx = w * 0.5, cy = h * 0.42;
+            var bodyC = pal.style === "pencil" ? pal.g1 : (pal.style === "fantasy" ? "#9333ea" : "#d9534f");
+            var tCount = Math.max(1, Math.floor(8 * midP));
+            for (var t = 0; t < tCount; t++) {
+              var sp = (t - 3.5) / 3.5;
+              ctx.strokeStyle = pal.style === "pencil" ? pal.stroke : bodyC;
+              ctx.lineWidth = pal.style === "pencil" ? 6 : 14;
+              ctx.lineCap = "round";
+              ctx.beginPath();
+              ctx.moveTo(cx + sp * w * 0.08, cy + h * 0.08);
+              ctx.bezierCurveTo(cx + sp * w * 0.22, cy + h * 0.25, cx + sp * w * 0.34, cy + h * 0.36, cx + sp * w * 0.40, h * 0.88);
+              ctx.stroke();
+            }
+            ctx.fillStyle = bodyC;
+            ctx.beginPath();
+            ctx.ellipse(cx, cy - h * 0.06, w * 0.14 * midP, h * 0.17 * midP, 0, 0, Math.PI * 2);
+            ctx.fill();
+            if (pal.style === "pencil") { ctx.strokeStyle = pal.stroke; ctx.lineWidth = 3; ctx.stroke(); }
+            if (detP > 0) {
+              // 3 Glowing Hearts!
+              [[cx, cy - h * 0.12], [cx - 38, cy - h * 0.04], [cx + 38, cy - h * 0.04]].forEach(function (pt) {
+                ctx.fillStyle = pal.style === "pencil" ? pal.stroke : "#38bdf8";
+                ctx.beginPath(); ctx.arc(pt[0], pt[1], 10 * detP, 0, Math.PI * 2); ctx.fill();
+              });
+              // Eyes
+              [-48, 48].forEach(function (dx) {
+                ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(cx + dx, cy + 12, 9 * detP, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(cx + dx, cy + 12, 4 * detP, 0, Math.PI * 2); ctx.fill();
+              });
+            }
+          } else if (item.id === "socotra_island") {
+            ctx.fillStyle = pal.style === "pencil" ? pal.g1 : (pal.style === "fantasy" ? "#3b1d60" : "#9c6644");
+            ctx.fillRect(0, h * 0.72, w * midP, h * 0.28);
+            ctx.strokeStyle = pal.style === "pencil" ? pal.stroke : "#6f4e37";
+            ctx.lineWidth = 22 * midP; ctx.lineCap = "round";
+            ctx.beginPath(); ctx.moveTo(w * 0.5, h * 0.74); ctx.lineTo(w * 0.5, h * 0.44); ctx.stroke();
+            for (var b = 0; b < Math.floor(7 * midP); b++) {
+              var bx = w * 0.5 + (b - 3) * (w * 0.065);
+              ctx.lineWidth = 6;
+              ctx.beginPath(); ctx.moveTo(w * 0.5, h * 0.48); ctx.lineTo(bx, h * 0.34); ctx.stroke();
+            }
+            if (detP > 0) {
+              ctx.fillStyle = pal.style === "pencil" ? pal.g2 : (pal.style === "fantasy" ? "#10b981" : "#2d6a4f");
+              ctx.beginPath();
+              ctx.moveTo(w * 0.22, h * 0.35);
+              ctx.bezierCurveTo(w * 0.26, h * 0.14, w * 0.74, h * 0.14, w * 0.78, h * 0.35);
+              ctx.closePath(); ctx.fill();
+              if (pal.style === "pencil") { ctx.strokeStyle = pal.stroke; ctx.lineWidth = 3; ctx.stroke(); }
+            }
+          } else if (item.id === "pink_lake_hillier") {
+            ctx.fillStyle = pal.style === "pencil" ? pal.g1 : "#1b4332";
+            ctx.fillRect(0, h * 0.35, w * midP, h * 0.65);
+            ctx.fillStyle = pal.style === "pencil" ? pal.hl : (pal.style === "fantasy" ? "#f472b6" : "#ec4899");
+            ctx.beginPath();
+            ctx.ellipse(w * 0.5, h * 0.63, w * 0.36 * midP, h * 0.20 * midP, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = pal.style === "pencil" ? pal.stroke : "#fff"; ctx.lineWidth = 4; ctx.stroke();
+          } else if (item.id === "door_to_hell_darvaza") {
+            ctx.fillStyle = pal.style === "pencil" ? pal.g1 : "#2b1b17";
+            ctx.fillRect(0, h * 0.56, w, h * 0.44);
+            ctx.fillStyle = pal.style === "pencil" ? pal.g2 : "#1a0d0a";
+            ctx.beginPath();
+            ctx.ellipse(w * 0.5, h * 0.68, w * 0.32 * midP, h * 0.16 * midP, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = pal.style === "pencil" ? pal.stroke : "#ea580c"; ctx.lineWidth = 5; ctx.stroke();
+            if (detP > 0) {
+              for (var f = 0; f < 7; f++) {
+                var fx = w * (0.28 + f * 0.072);
+                var fh = h * (0.18 + ((f + seed) % 3) * 0.06) * detP;
+                ctx.fillStyle = pal.style === "pencil" ? pal.stroke : (f % 2 === 0 ? "#f97316" : "#facc15");
+                ctx.beginPath();
+                ctx.moveTo(fx - 18, h * 0.68);
+                ctx.quadraticCurveTo(fx, h * 0.68 - fh, fx + 18, h * 0.68);
+                ctx.fill();
+              }
+            }
+          } else if (item.id === "derinkuyu_underground_city") {
+            ctx.fillStyle = pal.style === "pencil" ? pal.g1 : "#3e2723";
+            ctx.fillRect(0, h * 0.24, w * midP, h * 0.76);
+            ctx.fillStyle = pal.style === "pencil" ? pal.sky1 : "#141010";
+            ctx.fillRect(w * 0.47, h * 0.14, w * 0.06, h * 0.76 * midP);
+            for (var lv = 0; lv < Math.floor(4 * midP); lv++) {
+              var ly = h * (0.33 + lv * 0.15);
+              [0.20, 0.62].forEach(function (rx) {
+                ctx.fillStyle = pal.style === "pencil" ? pal.sky1 : "#1f1612";
+                ctx.fillRect(w * rx, ly, w * 0.18, h * 0.09);
+                ctx.strokeStyle = pal.style === "pencil" ? pal.stroke : "#e6b84c";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(w * rx, ly, w * 0.18, h * 0.09);
+              });
+            }
+          } else if (item.id === "great_pyramid_giza") {
+            ctx.fillStyle = pal.style === "pencil" ? pal.g1 : "#c2955b";
+            ctx.fillRect(0, h * 0.72, w, h * 0.28);
+            ctx.fillStyle = pal.style === "pencil" ? pal.hl : "#e6b86e";
+            ctx.beginPath(); ctx.moveTo(w * 0.48, h * 0.20); ctx.lineTo(w * 0.16, h * 0.76); ctx.lineTo(w * 0.56, h * 0.78); ctx.closePath(); ctx.fill();
+            if (pal.style === "pencil") { ctx.strokeStyle = pal.stroke; ctx.lineWidth = 3; ctx.stroke(); }
+            ctx.fillStyle = pal.style === "pencil" ? pal.g2 : "#9c7238";
+            ctx.beginPath(); ctx.moveTo(w * 0.48, h * 0.20); ctx.lineTo(w * 0.56, h * 0.78); ctx.lineTo(w * 0.78, h * 0.76); ctx.closePath(); ctx.fill();
+            if (detP > 0) {
+              ctx.fillStyle = pal.style === "pencil" ? pal.stroke : "#fde047";
+              ctx.beginPath(); ctx.moveTo(w * 0.48, h * 0.20); ctx.lineTo(w * 0.43, h * 0.29); ctx.lineTo(w * 0.525, h * 0.29); ctx.closePath(); ctx.fill();
+            }
+          } else {
+            // Expressive geometric emblem for remaining wonders (Jellyfish, Tardigrade, Antikythera, Illusions, Mind)
+            var gx = w * 0.5, gy = h * 0.5;
+            var col = pal.style === "pencil" ? pal.stroke : pal.acc1;
+            ctx.strokeStyle = col;
+            ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.arc(gx, gy, h * 0.28 * midP, 0, Math.PI * 2); ctx.stroke();
+            if (detP > 0) {
+              ctx.strokeStyle = pal.style === "pencil" ? pal.acc2 : pal.acc2;
+              ctx.lineWidth = 4;
+              ctx.beginPath();
+              for (var k = 0; k < 8; k++) {
+                var ang = (k * Math.PI) / 4;
+                var rr = k % 2 === 0 ? h * 0.26 * detP : h * 0.12 * detP;
+                var px = gx + rr * Math.cos(ang), py = gy + rr * Math.sin(ang);
+                if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+              }
+              ctx.closePath(); ctx.stroke();
+            }
+          }
+          ctx.restore();
+        }
+
+        // Layer 4: Finish + Animated Brush Cursor while painting
+        if (pal.style === "fantasy" && finP > 0) {
+          ctx.strokeStyle = pal.acc1;
+          ctx.lineWidth = 2;
+          for (var sp = 0; sp < Math.floor(10 * finP); sp++) {
+            var x = ((sp * 199 + seed * 41) % 90 + 5) / 100 * w;
+            var y = ((sp * 131 + seed * 29) % 80 + 10) / 100 * h;
+            ctx.beginPath(); ctx.moveTo(x - 7, y); ctx.lineTo(x + 7, y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x, y - 7); ctx.lineTo(x, y + 7); ctx.stroke();
+          }
+        }
+        if (p > 0.02 && p < 0.98) {
+          var bx = w * (0.15 + 0.7 * ((p * 2.5) % 1));
+          var by = h * (0.25 + 0.5 * ((Math.sin(p * Math.PI * 4) + 1) / 2));
+          ctx.fillStyle = pal.style === "pencil" ? "#1f1f1f" : "#fde047";
+          ctx.beginPath(); ctx.arc(bx, by, 8, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2; ctx.stroke();
+        }
+      }
+
+      function animateArtist(durationMs) {
+        if (!artistState.item) return;
+        cancelAnimationFrame(artistState.rafId);
+        artistState.progress = 0;
+        var canvas = document.getElementById("artist-canvas");
+        var bar = document.getElementById("artist-progress-bar");
+        var start = performance.now();
+
+        function step(now) {
+          var elapsed = now - start;
+          artistState.progress = Math.min(1, elapsed / durationMs);
+          if (bar) bar.style.width = Math.round(artistState.progress * 100) + "%";
+          drawCanvasArt(canvas, artistState.item, artistState.mode, artistState.progress, artistState.seed);
+          if (artistState.progress < 1) {
+            artistState.rafId = requestAnimationFrame(step);
+          }
+        }
+        artistState.rafId = requestAnimationFrame(step);
+      }
+
+      /* ===================== RENDER HEADER & DISCOVER ===================== */
+      var activeCategory = "all";
+      var currentModalItem = null;
+      var collectionMode = "saved";
+
+      function updateHeader() {
+        var r = getRankInfo(state.points);
+        document.getElementById("header-points").textContent = "⭐ " + state.points + " نقطة";
+        document.getElementById("header-rank").textContent = r.title + " • " + state.discovered.length + "/15";
+        document.getElementById("discover-progress-text").textContent = "تم توثيق " + state.discovered.length + " من " + DISCOVERIES.length + " اكتشافاً حقيقياً";
+        document.getElementById("discover-progress-bar").style.width = Math.round((state.discovered.length / DISCOVERIES.length) * 100) + "%";
+      }
+
+      function getNarrationText(item) {
+        return item.title + ". " + item.subtitle + ". " + item.summary + " " + item.facts.join(" ");
+      }
+
+      function renderDiscoveryCard(item) {
+        var catObj = CATEGORIES.find(function (c) { return c.id === item.category; }) || CATEGORIES[0];
+        var isFav = state.favorites.indexOf(item.id) !== -1;
+        var isDisc = state.discovered.indexOf(item.id) !== -1;
+        var card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML =
+          '<div class="card-top">' +
+            '<span class="cat-badge">' + catObj.icon + ' ' + catObj.label + '</span>' +
+            '<div class="card-actions-mini">' +
+              (isDisc ? '<span style="color:var(--emerald);font-weight:800;font-size:0.85rem;">✅ مكتشف</span>' : '<span style="color:var(--gold-bright);font-weight:800;font-size:0.85rem;">+15 ⭐</span>') +
+              '<button class="icon-circle-btn btn-card-speak" title="اسمع القصة">🔊</button>' +
+              '<button class="icon-circle-btn btn-card-fav ' + (isFav ? 'active' : '') + '" title="حفظ في مجموعتي">' + (isFav ? '🔖' : '🤍') + '</button>' +
+            '</div>' +
+          '</div>' +
+          '<h3 class="card-title">' + item.title + '</h3>' +
+          '<p class="card-sub">' + item.subtitle + '</p>' +
+          '<div class="card-footer-btns">' +
+            '<button class="big-btn btn-gold btn-card-open" style="flex:1;min-height:48px;">🎨🔊 افتح وعيش الحدث</button>' +
+          '</div>';
+
+        card.querySelector(".btn-card-speak").addEventListener("click", function (e) {
+          e.stopPropagation();
+          speakText(getNarrationText(item), 0, null);
+          showToast("🔊 جاري قراءة: " + item.title);
+        });
+        card.querySelector(".btn-card-fav").addEventListener("click", function (e) {
+          e.stopPropagation();
+          toggleFavorite(item.id);
+        });
+        card.querySelector(".btn-card-open").addEventListener("click", function () {
+          openDiscoveryModal(item, false, false);
+        });
+        return card;
+      }
+
+      function renderDiscoverPage() {
+        var chipsWrap = document.getElementById("category-chips");
+        chipsWrap.innerHTML = "";
+        CATEGORIES.forEach(function (c) {
+          var b = document.createElement("button");
+          b.className = "chip-btn" + (activeCategory === c.id ? " selected" : "");
+          b.textContent = c.icon + " " + c.label;
+          b.onclick = function () { activeCategory = c.id; renderDiscoverPage(); };
+          chipsWrap.appendChild(b);
+        });
+
+        var q = (document.getElementById("search-input").value || "").trim();
+        var list = DISCOVERIES.filter(function (item) {
+          var okCat = activeCategory === "all" || item.category === activeCategory;
+          var okQ = !q || item.title.indexOf(q) !== -1 || item.subtitle.indexOf(q) !== -1 || item.location.indexOf(q) !== -1;
+          return okCat && okQ;
+        });
+
+        var grid = document.getElementById("discover-grid");
+        grid.innerHTML = "";
+        if (list.length === 0) {
+          grid.innerHTML = '<div class="studio-box" style="text-align:center;">🔍 لم نعثر على نتائج مطابقة، جرّب كلمة أخرى!</div>';
+        } else {
+          list.forEach(function (it) { grid.appendChild(renderDiscoveryCard(it)); });
+        }
+      }
+
+      function toggleFavorite(id) {
+        var idx = state.favorites.indexOf(id);
+        if (idx === -1) state.favorites.push(id); else state.favorites.splice(idx, 1);
+        saveState();
+        renderDiscoverPage();
+        renderCollectionPage();
+        if (currentModalItem && currentModalItem.id === id) {
+          var favBtn = document.getElementById("btn-modal-fav");
+          var isF = state.favorites.indexOf(id) !== -1;
+          favBtn.textContent = isF ? "✅ محفوظة في مجموعتي" : "🔖 حفظ في مجموعتي";
+        }
+      }
+
+      /* ===================== MODAL: SMART ARTIST + VOICE READER + INTERACTIVE LABS ===================== */
+      function renderHighlightedStory(item, activeWordIdx) {
+        var full = getNarrationText(item);
+        var tok = tokenizeText(full);
+        var container = document.getElementById("modal-live-text");
+        if (activeWordIdx < 0 || activeWordIdx >= tok.words.length) {
+          container.textContent = full;
+          return;
+        }
+        var html = "";
+        var cursor = 0;
+        for (var i = 0; i < tok.words.length; i++) {
+          var st = tok.starts[i];
+          var w = tok.words[i];
+          if (st > cursor) html += full.slice(cursor, st);
+          if (i === activeWordIdx) {
+            html += '<span class="spoken-word-hl">' + w + '</span>';
+          } else {
+            html += w;
+          }
+          cursor = st + w.length;
+        }
+        if (cursor < full.length) html += full.slice(cursor);
+        container.innerHTML = html;
+      }
+
+      function renderArtStyleChips() {
+        var row = document.getElementById("art-style-chips");
+        row.innerHTML = "";
+        ART_MODES.forEach(function (m) {
+          var b = document.createElement("button");
+          b.className = "chip-btn" + (artistState.mode === m.id ? " selected" : "");
+          b.textContent = m.label;
+          b.onclick = function () {
+            artistState.mode = m.id;
+            renderArtStyleChips();
+            updateArtistBadge();
+            animateArtist(2200);
+          };
+          row.appendChild(b);
+        });
+      }
+
+      function updateArtistBadge() {
+        if (!artistState.item) return;
+        var eff = resolveArtStyle(artistState.mode, artistState.item.category);
+        var effObj = ART_MODES.find(function (m) { return m.id === eff; });
+        document.getElementById("artist-style-badge").textContent =
+          artistState.mode === "auto" ? ("تلقائي ← " + (effObj ? effObj.label : eff)) : (effObj ? effObj.label : eff);
+      }
+
+      function renderTtsChips() {
+        var sRow = document.getElementById("tts-speed-chips");
+        sRow.innerHTML = "";
+        SPEEDS.forEach(function (s) {
+          var b = document.createElement("button");
+          b.className = "chip-btn" + (ttsState.speedId === s.id ? " selected" : "");
+          b.textContent = s.label;
+          b.onclick = function () {
+            ttsState.speedId = s.id;
+            renderTtsChips();
+            if (ttsState.speaking && currentModalItem) {
+              speakText(getNarrationText(currentModalItem), ttsState.currentWordIdx, function (wi) {
+                renderHighlightedStory(currentModalItem, wi);
+              });
+            }
+          };
+          sRow.appendChild(b);
+        });
+
+        var vRow = document.getElementById("tts-voice-chips");
+        vRow.innerHTML = "";
+        VOICES.forEach(function (v) {
+          var b = document.createElement("button");
+          b.className = "chip-btn" + (ttsState.voiceId === v.id ? " selected" : "");
+          b.textContent = v.label;
+          b.onclick = function () {
+            ttsState.voiceId = v.id;
+            renderTtsChips();
+            if (ttsState.speaking && currentModalItem) {
+              speakText(getNarrationText(currentModalItem), ttsState.currentWordIdx, function (wi) {
+                renderHighlightedStory(currentModalItem, wi);
+              });
+            }
+          };
+          vRow.appendChild(b);
+        });
+      }
+
+      function renderInteractiveLab(item) {
+        var wrap = document.getElementById("modal-lab-container");
+        wrap.innerHTML = "";
+        if (!item.lab) return;
+        var box = document.createElement("div");
+        box.className = "lab-box";
+
+        if (item.lab === "monty") {
+          box.innerHTML =
+            '<strong>🧪 تجربة الأبواب الثلاثة (100 جولة)</strong>' +
+            '<div style="margin:8px 0;"><button class="big-btn btn-emerald" id="btn-run-monty" style="width:100%;">🎲 شغّل 100 جولة</button></div>' +
+            '<div id="monty-res" style="font-weight:700;"></div>';
+          wrap.appendChild(box);
+          box.querySelector("#btn-run-monty").onclick = function () {
+            var sw = 0, st = 0;
+            for (var i = 0; i < 100; i++) {
+              if (Math.floor(Math.random() * 3) === Math.floor(Math.random() * 3)) st++; else sw++;
+            }
+            box.querySelector("#monty-res").textContent = "✅ التبديل فاز: " + sw + " مرة | البقاء فاز: " + st + " مرة";
+          };
+        } else if (item.lab === "birthday") {
+          box.innerHTML =
+            '<strong>🎂 اختبر عدد الأشخاص: <span id="bd-n">23</span></strong>' +
+            '<input type="range" min="2" max="70" value="23" id="bd-slider" style="width:100%;margin:10px 0;">' +
+            '<div id="bd-prob" style="font-weight:800;color:var(--gold-bright);">احتمال التطابق: 51%</div>';
+          wrap.appendChild(box);
+          box.querySelector("#bd-slider").oninput = function (e) {
+            var n = parseInt(e.target.value, 10);
+            box.querySelector("#bd-n").textContent = n;
+            var noMatch = 1;
+            for (var i = 0; i < n; i++) noMatch *= (365 - i) / 365;
+            var pct = Math.round((1 - noMatch) * 100);
+            box.querySelector("#bd-prob").textContent = "احتمال التطابق: " + pct + "%";
+          };
+        } else if (item.lab === "muller") {
+          box.innerHTML =
+            '<strong>👁️ تحقق بنفسك من طول الخطين</strong>' +
+            '<canvas id="muller-c" width="520" height="160" style="width:100%;background:#0e1525;border-radius:12px;margin:8px 0;"></canvas>' +
+            '<button class="big-btn btn-gold" id="btn-muller-guide" style="width:100%;">📏 أظهر خطوط القياس</button>';
+          wrap.appendChild(box);
+          var showG = false;
+          function drawM() {
+            var c = box.querySelector("#muller-c"), cx = c.getContext("2d");
+            cx.clearRect(0, 0, c.width, c.height);
+            cx.strokeStyle = "#f9de7d"; cx.lineWidth = 5;
+            [48, 112].forEach(function (y, idx) {
+              cx.beginPath(); cx.moveTo(130, y); cx.lineTo(390, y); cx.stroke();
+              var d = idx === 0 ? -20 : 20;
+              cx.beginPath(); cx.moveTo(130, y); cx.lineTo(130 + d, y - 18); cx.moveTo(130, y); cx.lineTo(130 + d, y + 18); cx.stroke();
+              cx.beginPath(); cx.moveTo(390, y); cx.lineTo(390 - d, y - 18); cx.moveTo(390, y); cx.lineTo(390 - d, y + 18); cx.stroke();
+            });
+            if (showG) {
+              cx.strokeStyle = "#2dd4bf"; cx.lineWidth = 3;
+              cx.beginPath(); cx.moveTo(130, 14); cx.lineTo(130, 146); cx.moveTo(390, 14); cx.lineTo(390, 146); cx.stroke();
+            }
+          }
+          drawM();
+          box.querySelector("#btn-muller-guide").onclick = function () { showG = !showG; drawM(); };
+        } else if (item.lab === "contrast") {
+          box.innerHTML =
+            '<strong>🎨 ادمج المربعين الرماديين معاً</strong>' +
+            '<canvas id="contrast-c" width="520" height="150" style="width:100%;border-radius:12px;margin:8px 0;"></canvas>' +
+            '<button class="big-btn btn-gold" id="btn-merge-sq" style="width:100%;">🔁 دمج / فصل المربعين</button>';
+          wrap.appendChild(box);
+          var merged = false;
+          function drawC() {
+            var c = box.querySelector("#contrast-c"), cx = c.getContext("2d");
+            cx.fillStyle = "#141824"; cx.fillRect(0, 0, 260, 150);
+            cx.fillStyle = "#f3efe6"; cx.fillRect(260, 0, 260, 150);
+            cx.fillStyle = "#888c96";
+            if (merged) cx.fillRect(195, 45, 130, 60);
+            else { cx.fillRect(100, 45, 60, 60); cx.fillRect(360, 45, 60, 60); }
+          }
+          drawC();
+          box.querySelector("#btn-merge-sq").onclick = function () { merged = !merged; drawC(); };
+        } else {
+          box.innerHTML = '<strong>👁️ تأمل الشبكة: ستلاحظ نقاطاً رمادية عند التقاطعات!</strong>';
+          wrap.appendChild(box);
+        }
+      }
+
+      function liveDrawAndReadTogether(item) {
+        if (!item) return;
+        safeVibrate(90);
+        animateArtist(6500);
+        speakText(getNarrationText(item), 0, function (wi) {
+          renderHighlightedStory(item, wi);
+        });
+      }
+
+      function openDiscoveryModal(item, fromRing, autoLive) {
+        currentModalItem = item;
+        artistState.item = item;
+        artistState.mode = "auto";
+        artistState.seed = 0;
+
+        if (state.discovered.indexOf(item.id) === -1) {
+          state.discovered.push(item.id);
+          addPoints(15, "اكتشاف موثق جديد!");
+        }
+        renderDiscoverPage();
+        renderCollectionPage();
+
+        var catObj = CATEGORIES.find(function (c) { return c.id === item.category; }) || CATEGORIES[0];
+        document.getElementById("modal-badge").textContent = fromRing ? "💍 اكتشاف عشوائي من الخاتم" : (catObj.icon + " " + catObj.label);
+        document.getElementById("modal-title").textContent = item.title;
+        document.getElementById("modal-subtitle").textContent = item.subtitle + " • " + item.location;
+        document.getElementById("modal-ref").textContent = "المصدر: " + item.ref;
+
+        var factsEl = document.getElementById("modal-facts-list");
+        factsEl.innerHTML = "<strong style='color:var(--gold-bright);'>✅ حقائق موثقة:</strong>";
+        item.facts.forEach(function (f) {
+          var row = document.createElement("div");
+          row.className = "fact-row";
+          row.innerHTML = "<span>🌟</span><span>" + f + "</span>";
+          factsEl.appendChild(row);
+        });
+
+        var isFav = state.favorites.indexOf(item.id) !== -1;
+        document.getElementById("btn-modal-fav").textContent = isFav ? "✅ محفوظة في مجموعتي" : "🔖 حفظ في مجموعتي";
+
+        renderArtStyleChips();
+        updateArtistBadge();
+        renderTtsChips();
+        renderHighlightedStory(item, -1);
+        renderInteractiveLab(item);
+
+        document.getElementById("discovery-modal").classList.add("open");
+
+        if (autoLive) {
+          liveDrawAndReadTogether(item);
+        } else {
+          animateArtist(2400);
+        }
+      }
+
+      /* ===================== COLLECTION & ACCOUNT PAGES ===================== */
+      function renderCollectionPage() {
+        document.getElementById("count-saved").textContent = state.favorites.length;
+        document.getElementById("count-disc").textContent = state.discovered.length;
+        var grid = document.getElementById("collection-grid");
+        grid.innerHTML = "";
+        var ids = collectionMode === "saved" ? state.favorites : state.discovered;
+        var list = DISCOVERIES.filter(function (d) { return ids.indexOf(d.id) !== -1; });
+        if (list.length === 0) {
+          grid.innerHTML = '<div class="studio-box" style="text-align:center;">💍 مجموعتك فارغة الآن! اضغط على الخاتم الذهبي في الأعلى لكشف أول سر.</div>';
+        } else {
+          list.forEach(function (it) { grid.appendChild(renderDiscoveryCard(it)); });
+        }
+      }
+
+      function renderAccountPage() {
+        var r = getRankInfo(state.points);
+        document.getElementById("profile-name-display").textContent = "🧭 " + state.name;
+        document.getElementById("profile-rank-display").textContent = r.title + " — " + r.sub;
+        document.getElementById("profile-pts-label").textContent = "⭐ " + state.points + " نقطة";
+        document.getElementById("profile-next-label").textContent = r.next ? ("المتبقي للرتبة التالية: " + Math.max(0, r.next - state.points)) : "👑 وصلت لأعلى رتبة!";
+        var pct = r.next ? Math.min(100, Math.round(((state.points - r.min) / (r.next - r.min)) * 100)) : 100;
+        document.getElementById("profile-rank-bar").style.width = pct + "%";
+
+        var ladder = document.getElementById("ranks-ladder");
+        ladder.innerHTML = "";
+        [
+          { t: "مستكشف صغير", min: 0 },
+          { t: "مستكشف كبير", min: 200 },
+          { t: "سيد الخاتم", min: 500 }
+        ].forEach(function (lv) {
+          var unlocked = state.points >= lv.min;
+          var row = document.createElement("div");
+          row.className = "ring-dial-row";
+          row.style.borderColor = unlocked ? "var(--emerald)" : "var(--border)";
+          row.innerHTML = '<span>' + (unlocked ? "✅ " : "🔒 ") + '<strong>' + lv.t + '</strong></span><span style="color:var(--gold-bright);font-weight:800;">' + lv.min + '+ نقطة</span>';
+          ladder.appendChild(row);
+        });
+
+        var stats = document.getElementById("stats-grid");
+        stats.innerHTML = "";
+        [
+          ["📖 الاكتشافات", state.discovered.length + " / 15"],
+          ["🔖 المحفوظة", state.favorites.length],
+          ["🏆 انتصارات الألعاب", state.gamesWon],
+          ["❓ أفضل نتيجة أسئلة", state.quizBest + " / 6"],
+          ["🃏 أقل حركات ذاكرة", state.memoryBest ? state.memoryBest : "—"],
+          ["🔐 رموز مكسورة", state.codesCracked]
+        ].forEach(function (st) {
+          var c = document.createElement("div");
+          c.className = "studio-box";
+          c.style.margin = "0";
+          c.innerHTML = '<div style="font-size:1.3rem;font-weight:800;color:var(--gold-bright);">' + st[1] + '</div><div style="color:var(--muted);font-size:0.88rem;">' + st[0] + '</div>';
+          stats.appendChild(c);
+        });
+      }
+
+      /* ===================== 4 GAMES HUB + GAMEPLAY ===================== */
+      function renderPlayHub() {
+        document.getElementById("play-hub").style.display = "block";
+        document.getElementById("active-game-container").style.display = "none";
+        var games = [
+          { id: "quiz", icon: "❓", title: "تحدي أسئلة", sub: "أجب عن أسئلة العجائب واكسب 10 نقاط لكل إجابة" },
+          { id: "memory", icon: "🃏", title: "لعبة ذاكرة", sub: "طابق البطاقات الذهبية الست بأقل حركات" },
+          { id: "solomon", icon: "💍", title: "لغز سليمان", sub: "رتّب حلقات الخاتم الثلاث وفق الحكمة والأدلة" },
+          { id: "secret", icon: "🔐", title: "الرقم السري", sub: "اكسر الرمز السري من 3 أرقام بذكائك" }
+        ];
+        var grid = document.getElementById("games-grid");
+        grid.innerHTML = "";
+        games.forEach(function (g) {
+          var card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML =
+            '<div class="card-top"><span class="cat-badge">' + g.icon + ' لعبة ذكاء</span><button class="icon-circle-btn btn-g-speak" title="اسمع شرح اللعبة">🔊</button></div>' +
+            '<h3 class="card-title">' + g.title + '</h3>' +
+            '<p class="card-sub">' + g.sub + '</p>' +
+            '<button class="big-btn btn-gold btn-g-play">▶️ العب الآن</button>';
+          card.querySelector(".btn-g-speak").onclick = function () {
+            speakText(g.title + ". " + g.sub, 0, null);
+            showToast("🔊 " + g.title);
+          };
+          card.querySelector(".btn-g-play").onclick = function () { openGame(g.id); };
+          grid.appendChild(card);
+        });
+      }
+
+      function openGame(gameId) {
+        stopTts();
+        document.getElementById("play-hub").style.display = "none";
+        var c = document.getElementById("active-game-container");
+        c.style.display = "block";
+
+        if (gameId === "quiz") startQuizGame(c);
+        else if (gameId === "memory") startMemoryGame(c);
+        else if (gameId === "solomon") startSolomonPuzzle(c);
+        else startSecretNumberGame(c);
+      }
+
+      function gameHeaderHtml(title) {
+        return '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">' +
+          '<button class="big-btn btn-outline" id="btn-game-back" style="min-height:46px;">🔙 رجوع للألعاب</button>' +
+          '<strong style="color:var(--gold-bright);font-size:1.15rem;">' + title + '</strong></div>';
+      }
+
+      function startQuizGame(c) {
+        var qs = QUIZ_QUESTIONS.slice().sort(function () { return Math.random() - 0.5; });
+        var idx = 0, score = 0;
+
+        function renderQ() {
+          if (idx >= qs.length) {
+            var pts = score * 10;
+            if (score >= 4) state.gamesWon++;
+            if (score > state.quizBest) state.quizBest = score;
+            addPoints(pts, "أنهيت تحدي الأسئلة!");
+            c.innerHTML = gameHeaderHtml("❓ تحدي أسئلة") +
+              '<div class="studio-box" style="text-align:center;"><h2>🎉 أحسنت!</h2><p>أجبت على ' + score + ' من ' + qs.length + ' أسئلة</p>' +
+              '<button class="big-btn btn-gold" id="btn-q-again" style="width:100%;">🔄 جولة جديدة</button></div>';
+            c.querySelector("#btn-game-back").onclick = renderPlayHub;
+            c.querySelector("#btn-q-again").onclick = function () { startQuizGame(c); };
+            return;
+          }
+          var q = qs[idx];
+          c.innerHTML = gameHeaderHtml("❓ سؤال " + (idx + 1) + "/" + qs.length) +
+            '<div class="studio-box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+            '<span>النتيجة: ' + score + '</span>' +
+            '<button class="big-btn btn-sky" id="btn-q-speak" style="min-height:44px;padding:6px 14px;">🔊 اسمع السؤال</button></div>' +
+            '<h3 style="margin:6px 0 12px;">' + q.q + '</h3>' +
+            '<div id="q-opts" style="display:flex;flex-direction:column;gap:8px;"></div>' +
+            '<div id="q-exp" style="margin-top:10px;"></div></div>';
+          c.querySelector("#btn-game-back").onclick = function () { stopTts(); renderPlayHub(); };
+          c.querySelector("#btn-q-speak").onclick = function () {
+            speakText(q.q + ". الاختيارات: " + q.opts.join("، "), 0, null);
+          };
+          var optsWrap = c.querySelector("#q-opts");
+          q.opts.forEach(function (op, oi) {
+            var b = document.createElement("button");
+            b.className = "big-btn btn-outline";
+            b.style.width = "100%";
+            b.textContent = op;
+            b.onclick = function () {
+              Array.from(optsWrap.children).forEach(function (ch) { ch.disabled = true; });
+              if (oi === q.ans) {
+                score++;
+                b.className = "big-btn btn-emerald";
+                safeVibrate(80);
+              } else {
+                b.className = "big-btn btn-amber";
+                optsWrap.children[q.ans].className = "big-btn btn-emerald";
+              }
+              c.querySelector("#q-exp").innerHTML =
+                '<div class="lab-box">' + q.exp + '</div>' +
+                '<button class="big-btn btn-gold" id="btn-q-next" style="width:100%;">التالي ⬅️</button>';
+              c.querySelector("#btn-q-next").onclick = function () { idx++; renderQ(); };
+            };
+            optsWrap.appendChild(b);
+          });
+        }
+        renderQ();
+      }
+
+      function startMemoryGame(c) {
+        var deck = MEMORY_ITEMS.concat(MEMORY_ITEMS).sort(function () { return Math.random() - 0.5; })
+          .map(function (it, i) { return { uid: i, id: it.id, icon: it.icon, label: it.label, open: false, matched: false }; });
+        var moves = 0, locked = false, openPair = [];
+
+        function drawBoard() {
+          var matchedCnt = deck.filter(function (d) { return d.matched; }).length / 2;
+          c.innerHTML = gameHeaderHtml("🃏 لعبة ذاكرة") +
+            '<div class="studio-box"><div style="display:flex;justify-content:space-between;align-items:center;">' +
+            '<span>الحركات: ' + moves + ' | الأزواج: ' + matchedCnt + '/6</span>' +
+            '<button class="big-btn btn-sky" id="btn-m-speak" style="min-height:44px;padding:6px 12px;">🔊 اسمع</button></div>' +
+            '<div class="memory-grid" id="mem-grid"></div></div>';
+          c.querySelector("#btn-game-back").onclick = function () { stopTts(); renderPlayHub(); };
+          c.querySelector("#btn-m-speak").onclick = function () {
+            speakText("لعبة الذاكرة الذهبية! طابق بطاقات الأخطبوط والنار والذهب وسقطرى بأقل عدد من الحركات.", 0, null);
+          };
+          var grid = c.querySelector("#mem-grid");
+          deck.forEach(function (card, ci) {
+            var btn = document.createElement("button");
+            btn.className = "mem-card" + (card.matched ? " matched" : (card.open ? " open" : ""));
+            btn.innerHTML = (card.open || card.matched)
+              ? ('<span>' + card.icon + '</span><span style="font-size:0.8rem;">' + card.label + '</span>')
+              : '<span>✨</span>';
+            btn.onclick = function () {
+              if (locked || card.open || card.matched) return;
+              card.open = true;
+              openPair.push(ci);
+              drawBoard();
+              if (openPair.length === 2) {
+                moves++;
+                locked = true;
+                var a = deck[openPair[0]], b = deck[openPair[1]];
+                if (a.id === b.id) {
+                  a.matched = true; b.matched = true;
+                  openPair = []; locked = false;
+                  safeVibrate(70);
+                  drawBoard();
+                  if (deck.every(function (d) { return d.matched; })) {
+                    state.gamesWon++;
+                    if (!state.memoryBest || moves < state.memoryBest) state.memoryBest = moves;
+                    var reward = Math.max(20, 45 - Math.max(0, moves - 6) * 2);
+                    addPoints(reward, "ذاكرة فولاذية!");
+                  }
+                } else {
+                  setTimeout(function () {
+                    a.open = false; b.open = false;
+                    openPair = []; locked = false;
+                    drawBoard();
+                  }, 650);
+                }
+              }
+            };
+            grid.appendChild(btn);
+          });
+        }
+        drawBoard();
+      }
+
+      function startSolomonPuzzle(c) {
+        var stIdx = Math.min(state.solomonCleared, SOLOMON_STAGES.length - 1);
+        var vals = [2, 2, 0];
+
+        function drawPuzzle() {
+          var st = SOLOMON_STAGES[stIdx];
+          c.innerHTML = gameHeaderHtml("💍 لغز سليمان (" + (stIdx + 1) + "/" + SOLOMON_STAGES.length + ")") +
+            '<div class="studio-box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+            '<strong style="color:var(--gold-bright);">' + st.title + '</strong>' +
+            '<button class="big-btn btn-sky" id="btn-s-speak" style="min-height:44px;padding:6px 12px;">🔊 اسمع</button></div>' +
+            '<p style="margin:0 0 12px;">' + st.clue + '</p>' +
+            '<div id="sol-rings"></div>' +
+            '<div id="sol-msg" style="margin:8px 0;font-weight:700;color:var(--amber);"></div>' +
+            '<button class="big-btn btn-gold" id="btn-s-check" style="width:100%;">🔓 تحقق من قفل الخاتم</button></div>';
+
+          c.querySelector("#btn-game-back").onclick = function () { stopTts(); renderPlayHub(); };
+          c.querySelector("#btn-s-speak").onclick = function () { speakText(st.title + ". " + st.clue, 0, null); };
+
+          var ringsEl = c.querySelector("#sol-rings");
+          [
+            { label: "الحلقة الخارجية", opts: st.outer, idx: 0 },
+            { label: "الحلقة الوسطى", opts: st.middle, idx: 1 },
+            { label: "الحلقة الداخلية", opts: st.inner, idx: 2 }
+          ].forEach(function (r) {
+            var row = document.createElement("div");
+            row.className = "ring-dial-row";
+            row.innerHTML = '<span>' + r.label + '</span>' +
+              '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<button class="icon-circle-btn btn-prev">▶️</button>' +
+              '<strong style="min-width:95px;text-align:center;">' + r.opts[vals[r.idx]] + '</strong>' +
+              '<button class="icon-circle-btn btn-next">◀️</button></div>';
+            row.querySelector(".btn-prev").onclick = function () { vals[r.idx] = (vals[r.idx] - 1 + r.opts.length) % r.opts.length; drawPuzzle(); };
+            row.querySelector(".btn-next").onclick = function () { vals[r.idx] = (vals[r.idx] + 1) % r.opts.length; drawPuzzle(); };
+            ringsEl.appendChild(row);
+          });
+
+          c.querySelector("#btn-s-check").onclick = function () {
+            if (vals[0] === st.target[0] && vals[1] === st.target[1] && vals[2] === st.target[2]) {
+              state.gamesWon++;
+              state.solomonCleared = Math.max(state.solomonCleared, stIdx + 1);
+              addPoints(35, "فككت ختم سليمان!");
+              safeVibrate([90, 40, 120]);
+              c.querySelector("#sol-msg").style.color = "var(--emerald)";
+              c.querySelector("#sol-msg").textContent = "✅ " + st.exp;
+              if (stIdx < SOLOMON_STAGES.length - 1) {
+                stIdx++;
+                vals = [0, 0, 0];
+                setTimeout(drawPuzzle, 1300);
+              }
+            } else {
+              c.querySelector("#sol-msg").textContent = "💡 جرّب تحريك الحلقات قليلاً حسب الدليل!";
+            }
+          };
+        }
+        drawPuzzle();
+      }
+
+      function startSecretNumberGame(c) {
+        var digits = [0,1,2,3,4,5,6,7,8,9].sort(function () { return Math.random() - 0.5; }).slice(0, 3).join("");
+        var input = "", attempts = [], won = false;
+
+        function drawSec() {
+          c.innerHTML = gameHeaderHtml("🔐 الرقم السري") +
+            '<div class="studio-box"><div style="display:flex;justify-content:space-between;align-items:center;">' +
+            '<span>خزينة الذهب (3 أرقام مختلفة)</span>' +
+            '<button class="big-btn btn-sky" id="btn-sec-speak" style="min-height:44px;padding:6px 12px;">🔊 اسمع</button></div>' +
+            '<div class="digit-slots">' +
+              [0,1,2].map(function (i) { return '<div class="digit-slot">' + (input[i] || "•") + '</div>'; }).join("") +
+            '</div>' +
+            '<div id="sec-hint" style="text-align:center;color:var(--gold-bright);font-weight:700;min-height:22px;"></div>' +
+            (won
+              ? '<button class="big-btn btn-emerald" id="btn-sec-new" style="width:100%;margin-top:8px;">🎉 فتحت الخزينة! العب مجدداً</button>'
+              : '<div class="keypad-grid" id="sec-pad"></div>') +
+            '<div id="sec-log" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;"></div></div>';
+
+          c.querySelector("#btn-game-back").onclick = function () { stopTts(); renderPlayHub(); };
+          c.querySelector("#btn-sec-speak").onclick = function () {
+            speakText("خزينة الذهب السرية! أدخل ثلاثة أرقام مختلفة لكسر القفل.", 0, null);
+          };
+
+          if (won) {
+            c.querySelector("#btn-sec-new").onclick = function () { startSecretNumberGame(c); };
+          } else {
+            var pad = c.querySelector("#sec-pad");
+            ["1","2","3","4","5","6","7","8","9","⌫","0","✓"].forEach(function (k) {
+              var b = document.createElement("button");
+              b.className = "big-btn " + (k === "✓" ? "btn-gold" : (k === "⌫" ? "btn-amber" : "btn-outline"));
+              b.textContent = k;
+              b.onclick = function () {
+                if (k === "⌫") { input = input.slice(0, -1); drawSec(); }
+                else if (k === "✓") {
+                  if (input.length !== 3) { c.querySelector("#sec-hint").textContent = "💡 أدخل 3 أرقام أولاً"; return; }
+                  var exact = 0, near = 0;
+                  for (var i = 0; i < 3; i++) {
+                    if (input[i] === digits[i]) exact++;
+                    else if (digits.indexOf(input[i]) !== -1) near++;
+                  }
+                  attempts.unshift({ g: input, e: exact, n: near });
+                  if (exact === 3) {
+                    won = true;
+                    state.gamesWon++;
+                    state.codesCracked++;
+                    addPoints(35, "كسرت الرقم السري!");
+                    triggerGoldFlash();
+                  }
+                  input = "";
+                  drawSec();
+                } else if (input.length < 3 && input.indexOf(k) === -1) {
+                  input += k;
+                  drawSec();
+                }
+              };
+              pad.appendChild(b);
+            });
+          }
+
+          var log = c.querySelector("#sec-log");
+          attempts.forEach(function (a) {
+            var r = document.createElement("div");
+            r.className = "ring-dial-row";
+            r.innerHTML = '<strong>' + a.g + '</strong><span>✅ مكانه صح: ' + a.e + ' | 🟡 بمكان آخر: ' + a.n + '</span>';
+            log.appendChild(r);
+          });
+        }
+        drawSec();
+      }
+
+      /* ===================== EVENTS & INIT ===================== */
+      function switchPage(pageId) {
+        document.querySelectorAll(".page").forEach(function (p) { p.classList.remove("active"); });
+        document.getElementById("page-" + pageId).classList.add("active");
+        document.querySelectorAll(".nav-btn").forEach(function (b) {
+          b.classList.toggle("active", b.getAttribute("data-page") === pageId);
+        });
+        if (pageId === "play") renderPlayHub();
+        if (pageId === "collection") renderCollectionPage();
+        if (pageId === "account") renderAccountPage();
+      }
+
+      function openRandomFromRing() {
+        var pool = DISCOVERIES.filter(function (d) { return state.discovered.indexOf(d.id) === -1; });
+        if (pool.length === 0) pool = DISCOVERIES;
+        var picked = pool[Math.floor(Math.random() * pool.length)];
+        openDiscoveryModal(picked, true, true);
+      }
+
+      document.getElementById("btn-golden-ring").onclick = openRandomFromRing;
+      document.getElementById("banner-random-discover").onclick = openRandomFromRing;
+      document.getElementById("search-input").oninput = renderDiscoverPage;
+
+      document.querySelectorAll(".nav-btn").forEach(function (b) {
+        b.onclick = function () { switchPage(b.getAttribute("data-page")); };
+      });
+
+      document.getElementById("tab-col-saved").onclick = function () {
+        collectionMode = "saved";
+        this.className = "big-btn btn-gold";
+        document.getElementById("tab-col-discovered").className = "big-btn btn-outline";
+        renderCollectionPage();
+      };
+      document.getElementById("tab-col-discovered").onclick = function () {
+        collectionMode = "discovered";
+        this.className = "big-btn btn-gold";
+        document.getElementById("tab-col-saved").className = "big-btn btn-outline";
+        renderCollectionPage();
+      };
+
+      document.getElementById("btn-close-modal").onclick = function () {
+        stopTts();
+        cancelAnimationFrame(artistState.rafId);
+        document.getElementById("discovery-modal").classList.remove("open");
+      };
+      document.getElementById("btn-modal-fav").onclick = function () {
+        if (currentModalItem) toggleFavorite(currentModalItem.id);
+      };
+      document.getElementById("btn-modal-another").onclick = openRandomFromRing;
+
+      document.getElementById("btn-draw-read-live").onclick = function () {
+        liveDrawAndReadTogether(currentModalItem);
+      };
+      document.getElementById("btn-draw-other").onclick = function () {
+        if (!currentModalItem) return;
+        var eff = resolveArtStyle(artistState.mode, currentModalItem.category);
+        artistState.mode = eff === "realistic" ? "fantasy" : (eff === "fantasy" ? "pencil" : "realistic");
+        artistState.seed++;
+        renderArtStyleChips();
+        updateArtistBadge();
+        animateArtist(2400);
+        showToast("🎨 تم تغيير أسلوب الرسم!");
+      };
+      document.getElementById("btn-save-art").onclick = function () {
+        if (!currentModalItem) return;
+        var canvas = document.getElementById("artist-canvas");
+        drawCanvasArt(canvas, currentModalItem, artistState.mode, 1, artistState.seed);
+        try {
+          var link = document.createElement("a");
+          link.download = "solomon-" + currentModalItem.id + ".png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+          showToast("💾 تم حفظ الرسمة!");
+        } catch (e) {
+          showToast("🎨 اللوحة جاهزة على الشاشة!");
+        }
+      };
+      document.getElementById("btn-share-art").onclick = function () {
+        if (!currentModalItem) return;
+        var canvas = document.getElementById("artist-canvas");
+        drawCanvasArt(canvas, currentModalItem, artistState.mode, 1, artistState.seed);
+        canvas.toBlob(function (blob) {
+          if (blob && navigator.share && navigator.canShare) {
+            try {
+              var file = new File([blob], "solomon-" + currentModalItem.id + ".png", { type: "image/png" });
+              if (navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file], title: currentModalItem.title, text: "لوحة من تطبيق خاتم سليمان" });
+                return;
+              }
+            } catch (e) {}
+          }
+          // Graceful fallback: download image cleanly without any error box
+          var link = document.createElement("a");
+          link.download = "solomon-" + currentModalItem.id + ".png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+          showToast("📤 تم تجهيز الرسمة وحفظها للمشاركة!");
+        }, "image/png");
+      };
+
+      document.getElementById("btn-tts-play").onclick = function () {
+        if (!currentModalItem) return;
+        var startIdx = ttsState.paused ? ttsState.currentWordIdx : 0;
+        speakText(getNarrationText(currentModalItem), startIdx, function (wi) {
+          renderHighlightedStory(currentModalItem, wi);
+        });
+      };
+      document.getElementById("btn-tts-pause").onclick = pauseTts;
+      document.getElementById("btn-tts-stop").onclick = stopTts;
+
+      document.getElementById("btn-rename").onclick = function () {
+        var r = document.getElementById("rename-row");
+        r.style.display = r.style.display === "flex" ? "none" : "flex";
+        document.getElementById("rename-input").value = state.name;
+      };
+      document.getElementById("btn-save-name").onclick = function () {
+        var v = document.getElementById("rename-input").value.trim();
+        if (v) state.name = v;
+        saveState();
+        document.getElementById("rename-row").style.display = "none";
+        renderAccountPage();
+        showToast("✅ تم حفظ اسمك: " + state.name);
+      };
+      document.getElementById("btn-toggle-theme").onclick = function () {
+        state.lightTheme = !state.lightTheme;
+        document.body.classList.toggle("light", state.lightTheme);
+        saveState();
+      };
+      document.getElementById("btn-reset-progress").onclick = function () {
+        state.points = 0; state.discovered = []; state.favorites = [];
+        state.gamesWon = 0; state.quizBest = 0; state.memoryBest = 0;
+        state.solomonCleared = 0; state.codesCracked = 0;
+        saveState();
+        updateHeader(); renderDiscoverPage(); renderCollectionPage(); renderAccountPage();
+        showToast("🔄 تمت إعادة ضبط التقدم!");
+      };
+
+      loadState();
+      updateHeader();
+      renderDiscoverPage();
+      renderCollectionPage();
+      renderAccountPage();
+    })();
+  </script>
+</body>
+</html>

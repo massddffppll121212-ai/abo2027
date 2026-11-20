@@ -1,0 +1,6 @@
+{
+  "name": "خاتم سليمان",
+  "description": "خاتم سليمان (Solomon's Ring) - موسوعة اكتشافات حقيقية موثقة وألعاب ذكاء ومستويات تعمل بالكامل بدون إنترنت",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
